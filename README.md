@@ -14,21 +14,30 @@ GyroType is an innovative mobile app designed to help individuals with motor imp
 A new approach to typing, trying to help people with some motor problems, such as Parkinson's disease or tendonitis.
 
 - **Technology Stack:**
-  - Frontend: HTML, CSS, JavaScript
-  - Gyroscope Interaction:
+  - HTML;
+  - CSS;
+  - JavaScript.
+    
 - **Current State:**
-  - Basic prototype with arrow key input (as placeholders for gyroscope functionality).
+  - Basic prototype with arrow key to use on desktop, and rudimentary use of gyroscope for smarthphones.
   - Limited functionality for demonstration purposes.
 - **Future Enhancements:**
-  - Implement gyroscope-based typing.
+  - Implement on a intalable app for android.
   - Integrate word prediction algorithms.
   - Improve UI/UX design.
+  - Improve word localization based on the chosen language.
 
 ## Getting Started
 
+### Desktop:
 1. Clone this repository: `git clone https://github.com/BernardoLannes/word-in-hand.git`
 2. Open `index.html` in your browser.
-3. Use arrow keys to simulate gyroscope input (for now).
+3. Use arrow keys to simulate gyroscope input.
+
+### Smarthphone (Android Only)
+1. Download file "teste.html" (in the source folder).
+2. Open in your current navigator.
+3. If it doesn't work, try to use Opera navigator.
 
 ## Contributing
 
