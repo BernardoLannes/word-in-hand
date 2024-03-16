@@ -22,7 +22,7 @@ A new approach to typing, trying to help people with some motor problems, such a
   - Basic prototype with arrow key to use on desktop, and rudimentary use of gyroscope for smarthphones.
   - Limited functionality for demonstration purposes.
 - **Future Enhancements:**
-  - Implement on a intalable app for android.
+  - Implement in an installable Android app.
   - Integrate word prediction algorithms.
   - Improve UI/UX design.
   - Improve word localization based on the chosen language.
