@@ -282,6 +282,8 @@ document.addEventListener("keydown", function (event) {
     // Get the key code
     let key = event.keyCode;
 
+
+
     // Check if it is an arrow key
     if (key >= 37 && key <= 40) {
         // Prevent the default behavior
@@ -303,5 +305,8 @@ document.addEventListener("keydown", function (event) {
                 break;
         }
     }
+
     update();
 });
+
+

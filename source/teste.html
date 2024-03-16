@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word in Hand</title>
+</head>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .box {
+        margin: 5px;
+        padding: 5px;
+        width: 100px;
+        height: 100px;
+        border: 2px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .row {
+        display: flex;
+    }
+
+    .selected {
+        background-color: yellow;
+    }
+
+    .text {
+        width: 200px;
+        height: 100px;
+        border: 2px solid black;
+        margin: 25px;
+        padding: 5px;
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .input {
+        width: 60px;
+        height: 60px;
+        font-size: 13px;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="box" id="up">A</div>
+        </div>
+        <div class="row">
+            <div class="box" id="left">B</div>
+            <div class="text input" id="input"></div>
+            <div class="box" id="right">C</div>
+        </div>
+        <div class="row">
+            <div class="box" id="down">D</div>
+        </div>
+        <div class="text" id="output"></div>
+        <div class="text" id="gyro-info"></div>
+    </div>
+    <script>
+        class Node {
+            constructor(value, up, left, right, down) {
+                this.value = value;
+                this.up = up;
+                this.left = left;
+                this.right = right;
+                this.down = down;
+            }
+        }
+
+        // Camada 3
+        const layer3Nodes = [
+            new Node("B"), // 0 up up up
+            new Node("N"), // 1 up up left
+            new Node("L"), // 2 up up right
+            new Node("Y"), // 3 up up down
+
+            new Node("D"), // 4 up left up
+            new Node("."), // 5 up left left
+            new Node("P"), // 6 up left right
+            new Node("F"), // 7 up left down
+
+
+            new Node("T"), // 8  left up up
+            new Node("H"), // 9  left up left
+            new Node("K"), // 10 left up right
+            new Node(" C ", new Node("C"), new Node(""), new Node(""), new Node("Ç")), // 11 left up down
+
+            new Node("Q"), // 12 left left up
+            new Node("W"), // 13 left left left
+            new Node(","), // 14 left left right
+            new Node("?"), // 15 left left down
+
+
+            new Node("M"), // 16 right up up
+            new Node("V"), // 17 right up left
+            new Node("Z"), // 18 right up right
+            new Node("U"), // 19 right up down
+
+            new Node("G"), // 20 right left up
+            new Node("J"), // 21 right left left
+            new Node("X"), // 22 right left right
+            new Node("!")  // 23 right left down
+
+        ];
+
+        // Camada 2
+        const layer2Nodes = [
+            new Node("N L B Y", layer3Nodes[0], layer3Nodes[1], layer3Nodes[2], layer3Nodes[3]), // 0 up up
+            new Node("D P F .", layer3Nodes[4], layer3Nodes[5], layer3Nodes[6], layer3Nodes[7]), // 1 up left
+            new Node("A", null, null, null, null),                                               // 2 up right
+            new Node("S", null, null, null, null),                                               // 3 up down
+
+            new Node("T H K C", layer3Nodes[8], layer3Nodes[9], layer3Nodes[10], layer3Nodes[11]),   // 4 left up
+            new Node("Q W , ?", layer3Nodes[12], layer3Nodes[13], layer3Nodes[14], layer3Nodes[15]), // 5 left left
+            new Node("O"),                                                                           // 6 left right
+            new Node("I"),                                                                           // 7 left down
+
+            new Node("M V Z U", layer3Nodes[16], layer3Nodes[17], layer3Nodes[18], layer3Nodes[19]),   // 8  right up
+            new Node("G J X !", layer3Nodes[20], layer3Nodes[21], layer3Nodes[22], layer3Nodes[23]),   // 9  right left
+            new Node("E"),                                                                             // 10 right right
+            new Node("R")                                                                              // 11 right down
+        ];
+
+        // Camada 1
+        const layer1Nodes = [
+            new Node("A S N L B Y D P F .", layer2Nodes[0], layer2Nodes[1], layer2Nodes[2], layer2Nodes[3]),   // 0 up
+            new Node("O I T H K C Q W , ?", layer2Nodes[4], layer2Nodes[5], layer2Nodes[6], layer2Nodes[7]),   // 1 left
+            new Node("E R M V Z U G J X !", layer2Nodes[8], layer2Nodes[9], layer2Nodes[10], layer2Nodes[11]), // 2 right
+
+            new Node("_ ↤ ⇤ ↲ ´ ^ ~ ` 9 +",
+                new Node("⇤ ↲ ´ ^",
+                    new Node("⇤"), new Node("↲"), new Node("´"), new Node("^")
+                ),
+                new Node("~ ` 9 +",
+                    new Node("0 1 2 3 4 5 6 7 8 9 +",
+                        new Node("0 1 2 3",
+                            new Node("0"),
+                            new Node("1"),
+                            new Node("2"),
+                            new Node("3")
+                        ),
+                        new Node("4 5 6 7",
+                            new Node("4"),
+                            new Node("5"),
+                            new Node("6"),
+                            new Node("7")
+                        ),
+                        new Node("8 9 + -",
+                            new Node("8"),
+                            new Node("9"),
+                            new Node("+"),
+                            new Node("-")
+                        ),
+                        new Node("* % / =",
+                            new Node("*"),
+                            new Node("%"),
+                            new Node("/"),
+                            new Node("=")
+                        )
+                    ),
+                    new Node("\" ' @ # $ ( ) [ ] { } ° : ; < >",
+                        new Node("\" ' @ #",
+                            new Node("\""),
+                            new Node("'"),
+                            new Node("@"),
+                            new Node("#")
+                        ),
+
+                        new Node("( ) [ ]",
+                            new Node("("),
+                            new Node(")"),
+                            new Node("["),
+                            new Node("]")
+                        ),
+                        new Node("{ } $ °",
+                            new Node("{"),
+                            new Node("}"),
+                            new Node("$"),
+                            new Node("°")
+                        ),
+                        new Node(": ; < >",
+                            new Node(":"),
+                            new Node(";"),
+                            new Node("<"),
+                            new Node(">")
+                        )
+                    ),
+                    new Node("~"),
+                    new Node("`")
+                ),
+                new Node("↤"),
+                new Node("_")
+            )
+        ];
+
+
+
+        const rootNode = new Node("All", layer1Nodes[0], layer1Nodes[1], layer1Nodes[2], layer1Nodes[3])
+        var auxNode = rootNode;
+        var waitNode = auxNode;
+        var text = "";
+
+        function verifications() {
+            if (auxNode.value == "_") {
+                text += " ";
+                return 1;
+            }
+            if (auxNode.value == "↤") {
+                text = text.substring(0, text.length - 1);
+                return 2;
+            }
+            if (auxNode.value == "⇤") {
+                if (text[text.length - 1] == " ") {
+                    text = text.substring(0, text.length - 1);
+                }
+                while (text[text.length - 1] != " ") {
+                    text = text.substring(0, text.length - 1);
+                    if (text.length == 0) {
+                        break;
+                    }
+                }
+                return 3;
+            }
+            if (auxNode.value == "↲") {
+                text += "<br />";
+                return 4;
+            }
+            if (auxNode.value == "´") {
+                var char = text[text.length - 1];
+                text = text.substring(0, text.length - 1);
+
+                switch (char) {
+                    case "A":
+                        text += "Á";
+                        break;
+                    case "E":
+                        text += "É";
+                        break;
+                    case "I":
+                        text += "Í";
+                        break;
+                    case "O":
+                        text += "Ó";
+                        break;
+                    case "U":
+                        text += "Ú";
+                        break;
+                    default:
+                        text += char + "´";
+                        break;
+                }
+                return 5;
+            }
+            if (auxNode.value == "^") {
+                var char = text[text.length - 1];
+                text = text.substring(0, text.length - 1);
+
+                switch (char) {
+                    case "A":
+                        text += "Â";
+                        break;
+                    case "E":
+                        text += "Ê";
+                        break;
+                    case "I":
+                        text += "Î";
+                        break;
+                    case "O":
+                        text += "Ô";
+                        break;
+                    case "U":
+                        text += "Û";
+                        break;
+                    default:
+                        text += char + "^";
+                        break;
+                }
+                return 6;
+            }
+            if (auxNode.value == "~") {
+                var char = text[text.length - 1];
+                text = text.substring(0, text.length - 1);
+
+                switch (char) {
+                    case "A":
+                        text += "Ã";
+                        break;
+                    case "O":
+                        text += "Õ";
+                        break;
+                    default:
+                        text += char + "~";
+                        break;
+                }
+                return 7;
+            }
+            if (auxNode.value == "`") {
+                var char = text[text.length - 1];
+                text = text.substring(0, text.length - 1);
+
+                switch (char) {
+                    case "A":
+                        text += "À";
+                        break;
+                    default:
+                        text += char + "`";
+                        break;
+                }
+                return 8;
+            }
+            return 0;
+        }
+
+
+        let up = document.getElementById("up");
+        let down = document.getElementById("down");
+        let left = document.getElementById("left");
+        let right = document.getElementById("right");
+        let input = document.getElementById("input");
+        let output = document.getElementById("output");
+
+
+        // Update the box content
+        function update() {
+            if (auxNode.value.length == 1) {
+                if (verifications() == 0) {
+                    text += auxNode.value;
+                }
+                auxNode = rootNode;
+            }
+            up.textContent = auxNode.up.value;
+            left.textContent = auxNode.left.value;
+            right.textContent = auxNode.right.value;
+            down.textContent = auxNode.down.value;
+            input.textContent = auxNode.value;
+            output.innerHTML = text;
+
+        }
+        update();
+        // Handle the keydown event
+        document.addEventListener("keydown", function (event) {
+            // Get the key code
+            let key = event.keyCode;
+
+
+
+            // Check if it is an arrow key
+            if (key >= 37 && key <= 40) {
+                // Prevent the default behavior
+                event.preventDefault();
+
+                // Switch the key code
+                switch (key) {
+                    case 37: // Left arrow
+                        auxNode = auxNode.left
+                        break;
+                    case 38: // Up arrow
+                        auxNode = auxNode.up;
+                        break;
+                    case 39: // Right arrow
+                        auxNode = auxNode.right;
+                        break;
+                    case 40: // Down arrow
+                        auxNode = auxNode.down;
+                        break;
+                }
+            }
+
+            update();
+        });
+
+
+        if ('Gyroscope' in window) {
+            const gyro = new Gyroscope();
+
+            const force = 1.5;
+            gyro.addEventListener('reading', () => {
+                const x = gyro.x;
+                const y = gyro.y;
+
+                let direction = '';
+                if (x > force) {
+                    direction = 'para baixo';
+                    auxNode = auxNode.down;
+                } else if (x < -force) {
+                    direction = 'para cima';
+                    auxNode = auxNode.up;
+                } else if (y > force) {
+                    direction = 'para direita';
+                    auxNode = auxNode.right;
+                } else if (y < -force) {
+                    direction = 'para esquerda';
+                    auxNode = auxNode.left
+                }
+                update();
+
+                if (auxNode.value != waitNode.value) {
+                    sleep(700);
+                    waitNode = auxNode;
+                }
+
+                document.getElementById('gyro-info').textContent = `Direção: ${direction}`;
+            });
+            gyro.start();
+        } else {
+            document.getElementById('gyro-info').textContent = 'Seu dispositivo não suporta giroscópio.';
+        }
+
+        function sleep(delay) {
+            var start = new Date().getTime();
+            while (new Date().getTime() < start + delay);
+        }
+
+    </script>
+</body>
+
+</html>
