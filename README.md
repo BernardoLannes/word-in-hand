@@ -5,27 +5,19 @@ GyroType is an innovative mobile app designed to help individuals with motor imp
 ## Features
 
 - **Gyroscope-based Typing:** Instead of traditional touch typing, users can tilt their phone to select letters, words, and symbols.
-- **Customizable Sensitivity:** Adjust the gyroscope sensitivity to match individual comfort levels.
-- **Word Prediction:** Smart word prediction algorithms suggest relevant words based on context.
-- **Minimalist Interface:** A clean and straightforward UI ensures ease of use.
+
 
 ## Prototype Details
-
-A new approach to typing, trying to help people with some motor problems, such as Parkinson's disease or tendonitis.
-
-- **Technology Stack:**
-  - HTML;
-  - CSS;
-  - JavaScript.
     
 - **Current State:**
   - Basic prototype with arrow key to use on desktop, and rudimentary use of gyroscope for smarthphones.
   - Limited functionality for demonstration purposes.
+    
 - **Future Enhancements:**
-  - Implement in an installable Android app.
-  - Integrate word prediction algorithms.
-  - Improve UI/UX design.
-  - Improve word localization based on the chosen language.
+  - **App:** Implement in an installable Android app and **Improve UI/UX design**.
+  - **Customizable Sensitivity:** Adjust the gyroscope sensitivity to match individual comfort levels.
+  - **Word Prediction:** Smart word prediction algorithms suggest relevant words based on context.
+  - **Diferent Languages:** Improve word localization based on the chosen language.
 
 ## Getting Started
 
